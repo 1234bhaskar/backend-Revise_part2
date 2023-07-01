@@ -1,33 +1,22 @@
 import express from "express";
-import mongoose from "mongoose";
+//import mongoose from "mongoose";
+import userRouter from "./Routes/user.js";
+import { config } from "dotenv";
+export const app = express();
 
-const app = express();
-app.use(express.json());
-
-mongoose
-  .connect("mongodb://127.0.0.1:27017/", {
-    dbName: "backendAPi",
-  })
-  .then(() => {
-    console.log("Database is up ");
-  })
-  .catch((e) => console.log(e));
-
-const schema = new mongoose.Schema({
-  name: String,
-  email: String,
-  password: String,
+config({
+  path: "./data/config.env",
 });
 
-const Users = mongoose.model("User", schema);
+//const router = express.Router();
 
-app.get("/Users/all", async (req, res) => {
-  const users = await Users.find({});
-  res.json({
-    success: true,
-    users,
-  });
-});
+// app.get("/Users/all", async (req, res) => {
+//   const users = await Users.find({});
+//   res.json({
+//     success: true,
+//     users,
+//   });
+// });
 
 //for static data
 // app.post("/users/new", async (req, res) => {
@@ -56,26 +45,11 @@ app.get("/Users/all", async (req, res) => {
 //     message: "Registered Successfully",
 //   });
 // });
+
+//Using MiddleWare
+app.use(express.json());
+app.use("/users", userRouter);
+
 app.get("/", (req, res) => {
   res.send("hello");
-});
-
-app.get("/userid/success", async (req, res) => {
-  res.json({
-    success: true,
-    message: "joking",
-  });
-});
-app.get("/userid/:id", async (req, res) => {
-  const { id } = req.params;
-  const user = await Users.findById(id);
-  console.log(req.params);
-  res.json({
-    success: true,
-    user,
-  });
-});
-
-app.listen(5000, () => {
-  console.log("port 5000 Server Running");
 });
